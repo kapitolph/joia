@@ -11,13 +11,19 @@ COPY package.json yarn.lock prisma ./
 RUN yarn install --frozen-lockfile --ignore-scripts
 
 # Copy the rest of the application code to the working directory
-COPY . .
+COPY . ./
 
 # Set the environment variable for production
 ENV NODE_ENV=production
 
 # Set the SKIP_ENV_VALIDATION environment variable
 ENV SKIP_ENV_VALIDATION=true
+
+# Define the build argument
+ARG DATABASE_URL
+
+# Use the build argument
+ENV DATABASE_URL=$DATABASE_URL
 
 # Run Prisma migration and build the Next.js application for production
 RUN yarn production:build
