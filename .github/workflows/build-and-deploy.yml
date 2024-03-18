@@ -25,6 +25,9 @@ jobs:
       REGISTRY: ${{ vars.NEXTPAY_REGISTRY }}
       SERVICE_ACCOUNT_USERNAME: ${{ vars.SERVICE_ACCOUNT_USERNAME }}
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      DATABASE_URL: ${{ secrets.JOIA_DATABASE_URL }}
+      ENCRYPTION_KEY: ${{ secrets.JOIA_ENCRYPTION_KEY }}
+      NEXT_PUBLIC_FRONTEND_URL: ${{ vars.JOIA_NEXT_PUBLIC_FRONTEND_URL }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -37,7 +40,7 @@ jobs:
           build_context: ./
           dockerfile_path: ./Dockerfile.production
           image_tags: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
-          build_args: 'CI_COMMIT_SHORT_SHA=${{ env.SHORT_SHA }}'
+          build_args: 'DATABASE_URL=${{ env.DATABASE_URL }},ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}'
       - name: Deploy Joia
         uses: ./.github/actions/devtron-container-deploy
         with:
