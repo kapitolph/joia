@@ -68,6 +68,9 @@ jobs:
       - name: Set up Depot CLI
         uses: depot/setup-action@v1
 
+      - name: Generate short sha
+        uses: ./.github/actions/generate-short-sha
+
       - name: Run docker build
         uses: depot/build-push-action@v1
         with:
@@ -77,4 +80,10 @@ jobs:
           platforms: "linux/amd64,linux/arm64"
           push: true
           file: ./Dockerfile.production
-          tags: ${{ env.REGISTRY }}:latest
+          tags: ${{ env.REGISTRY }}:${{ env.SHORT_SHA }}
+      - name: Deploy Joia
+        uses: ./.github/actions/devtron-container-deploy
+        with:
+          workflow_ids: "94" # Workflow ID for joia (94)
+          docker_image: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
+          devtron_cli_token: ${{ secrets.NEXTPAY_DEVTRON_TOKEN }}
