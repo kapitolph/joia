@@ -5,10 +5,10 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and yarn.lock to the working directory
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock prisma ./
 
 # Install dependencies using Yarn
-RUN yarn install --production
+RUN yarn install --frozen-lockfile --ignore-scripts
 
 # Copy the rest of the application code to the working directory
 COPY . .
