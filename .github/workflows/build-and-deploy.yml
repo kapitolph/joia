@@ -21,7 +21,7 @@ jobs:
       packages: write
       id-token: write
     env:
-      REGISTRY: ${{ vars.NEXTPAY_REGISTRY }}
+      REGISTRY: ${{ vars.JOIA_REGISTRY }}
       SERVICE_ACCOUNT_USERNAME: ${{ vars.SERVICE_ACCOUNT_USERNAME }}
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
