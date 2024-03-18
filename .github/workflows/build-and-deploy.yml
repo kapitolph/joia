@@ -1,4 +1,4 @@
-name: Deploy Joia
+name: Build and Deploy Joia
 
 on:
   workflow_dispatch:
