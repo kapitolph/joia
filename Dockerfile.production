@@ -23,4 +23,4 @@ RUN yarn production:build
 EXPOSE 3000
 
 # Set the entrypoint to load environment variables from the ConfigMap
-ENTRYPOINT ["/bin/sh", "-c", "export $(echo $ENV_VARS | xargs) && yarn start"]
+ENTRYPOINT ["/bin/sh", "-c", "yarn start"]
