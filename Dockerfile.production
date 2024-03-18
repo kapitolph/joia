@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Install production dependencies
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --immutable --production
 
 # Copy the built app code to the working directory
 COPY .next .next
