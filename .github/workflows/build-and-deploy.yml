@@ -25,9 +25,9 @@ jobs:
       REGISTRY: ${{ vars.NEXTPAY_REGISTRY }}
       SERVICE_ACCOUNT_USERNAME: ${{ vars.SERVICE_ACCOUNT_USERNAME }}
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
-      DATABASE_URL: ${{ secrets.JOIA_DATABASE_URL }}
-      ENCRYPTION_KEY: ${{ secrets.JOIA_ENCRYPTION_KEY }}
-      NEXT_PUBLIC_FRONTEND_URL: ${{ vars.JOIA_NEXT_PUBLIC_FRONTEND_URL }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      NEXT_PUBLIC_FRONTEND_URL: ${{ vars.NEXT_PUBLIC_FRONTEND_URL }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
