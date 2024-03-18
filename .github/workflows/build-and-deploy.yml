@@ -86,4 +86,4 @@ jobs:
         with:
           workflow_ids: "94" # Workflow ID for joia (94)
           docker_image: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
-          devtron_cli_token: ${{ secrets.NEXTPAY_DEVTRON_TOKEN }}
+          devtron_cli_token: ${{ secrets.JOIA_DEVTRON_TOKEN }}
