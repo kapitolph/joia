@@ -1,26 +1,22 @@
-# Use the official Node.js LTS (Long Term Support) image as the base image
-FROM node:18-alpine
+# Use an official Node.js runtime as the base image
+FROM node:18.19
 
-# Set the working directory inside the container
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and yarn.lock to the working directory
+# Copy the package.json and yarn.lock files to the working directory
 COPY package.json yarn.lock ./
 
-# Install dependencies using Yarn
-RUN yarn install --production
+# Install production dependencies
+RUN yarn install --immutable --production
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Copy the built app code to the working directory
+COPY .next .next
+COPY public public
+COPY prisma prisma
 
-# Set the environment variable for production
-ENV NODE_ENV=production
-
-# Run Prisma migration and build the Next.js application for production
-RUN yarn production:build
-
-# Expose the port on which the application will run (default for Next.js is 3000)
+# Expose the port on which the app will run
 EXPOSE 3000
 
-# Set the entrypoint to load environment variables from the ConfigMap
-ENTRYPOINT ["/bin/sh", "-c", "yarn start"]
+# Start the app using yarn start
+CMD ["yarn", "start"]
