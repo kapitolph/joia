@@ -19,11 +19,13 @@ ENV NODE_ENV=production
 # Set the SKIP_ENV_VALIDATION environment variable
 ENV SKIP_ENV_VALIDATION=true
 
-# Define the build argument
+# Define the build arguments
 ARG DATABASE_URL
+ARG ENCRYPTION_KEY
 
-# Use the build argument
+# Use the build arguments
 ENV DATABASE_URL=$DATABASE_URL
+ENV ENCRYPTION_KEY=$ENCRYPTION_KEY
 
 # Run Prisma migration and build the Next.js application for production
 RUN yarn production:build
