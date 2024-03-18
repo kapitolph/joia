@@ -20,6 +20,11 @@ jobs:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      SMTP_EMAIL_SERVER: ${{ secrets.SMTP_EMAIL_SERVER }}
+      SMTP_EMAIL_FROM: ${{ secrets.SMTP_EMAIL_FROM }}
+      INTERNAL_OPENAI_API_KEY: ${{ secrets.INTERNAL_OPENAI_API_KEY }}
       NEXT_PUBLIC_FRONTEND_URL: ${{ vars.NEXT_PUBLIC_FRONTEND_URL }}
     steps:
       - name: Checkout code
