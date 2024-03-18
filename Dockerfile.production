@@ -16,6 +16,9 @@ COPY . .
 # Set the environment variable for production
 ENV NODE_ENV=production
 
+# Set the SKIP_ENV_VALIDATION environment variable
+ENV SKIP_ENV_VALIDATION=true
+
 # Run Prisma migration and build the Next.js application for production
 RUN yarn production:build
 
