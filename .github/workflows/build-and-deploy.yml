@@ -1,19 +1,13 @@
-name: Build and Deploy Joia
+name: Build and Deploy
 
 on:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  packages: write
-
-concurrency:
-  group: joia-deployment
-  cancel-in-progress: true
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build-joia:
-    name: Build and Deploy Joia
+  build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -28,21 +22,48 @@ jobs:
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       NEXT_PUBLIC_FRONTEND_URL: ${{ vars.NEXT_PUBLIC_FRONTEND_URL }}
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-      - name: Generate short sha
-        uses: ./.github/actions/generate-short-sha
-      - name: Build Joia
-        uses: ./.github/actions/docker-build
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          depot_project_id: ${{ vars.DEPOT_PROJECT_ID }}
-          build_context: ./
-          dockerfile_path: ./Dockerfile.production
-          image_tags: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
-          build_args: 'DATABASE_URL=${{ env.DATABASE_URL }},ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}'
-      - name: Deploy Joia
-        uses: ./.github/actions/devtron-container-deploy
+          node-version: 18.19
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        id: yarn-cache
         with:
-          workflow_ids: '94' # Workflow ID for joia (94)
-          docker_image: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
-          devtron_cli_token: ${{ secrets.NEXTPAY_DEVTRON_TOKEN }}
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Build the app
+        run: yarn production:build
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.SERVICE_ACCOUNT_USERNAME }}
+          password: ${{ env.REGISTRY_TOKEN }}
+
+      - name: Set up Depot CLI
+        uses: depot/setup-action@v1
+
+      - name: Run docker build
+        uses: depot/build-push-action@v1
+        with:
+          project: ${{ vars.DEPOT_PROJECT_ID }}
+          build-args: "DATABASE_URL=${{ env.DATABASE_URL }},ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}"
+          context: ./
+          platforms: "linux/amd64,linux/arm64"
+          push: true
+          file: ./Dockerfile.production
+          tags: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}

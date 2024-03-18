@@ -1,0 +1,48 @@
+name: Build and Deploy Joia
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: joia-deployment
+  cancel-in-progress: true
+
+jobs:
+  build-joia:
+    name: Build and Deploy Joia
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    env:
+      REGISTRY: ${{ vars.JOIA_REGISTRY }}
+      SERVICE_ACCOUNT_USERNAME: ${{ vars.SERVICE_ACCOUNT_USERNAME }}
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      NEXT_PUBLIC_FRONTEND_URL: ${{ vars.NEXT_PUBLIC_FRONTEND_URL }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Generate short sha
+        uses: ./.github/actions/generate-short-sha
+      - name: Build Joia
+        uses: ./.github/actions/docker-build
+        with:
+          depot_project_id: ${{ vars.DEPOT_PROJECT_ID }}
+          build_context: ./
+          dockerfile_path: ./Dockerfile.production
+          image_tags: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
+          build_args: 'DATABASE_URL=${{ env.DATABASE_URL }},ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}'
+      - name: Deploy Joia
+        uses: ./.github/actions/devtron-container-deploy
+        with:
+          workflow_ids: '94' # Workflow ID for joia (94)
+          docker_image: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
+          devtron_cli_token: ${{ secrets.NEXTPAY_DEVTRON_TOKEN }}
