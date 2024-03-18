@@ -7,9 +7,8 @@ WORKDIR /app
 # Copy the package.json and yarn.lock files to the working directory
 COPY package.json yarn.lock ./
 
-# Copy the node_modules directory from the build context
-ARG NODE_MODULES_DIR
-COPY ${NODE_MODULES_DIR} ./node_modules
+# Install production dependencies
+RUN yarn install --immutable --production
 
 # Copy the built app code to the working directory
 COPY .next .next

@@ -78,8 +78,7 @@ jobs:
           build-args: >
             DATABASE_URL=${{ env.DATABASE_URL }},
             ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},
-            NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }},
-            NODE_MODULES_DIR=./node_modules
+            NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}
           context: ./
           platforms: >
             linux/amd64,
