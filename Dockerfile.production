@@ -29,6 +29,8 @@ ENV DATABASE_URL=$DATABASE_URL
 ENV ENCRYPTION_KEY=$ENCRYPTION_KEY
 ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
 
+RUN echo $NEXT_PUBLIC_FRONTEND_URL
+
 # Run Prisma migration and build the Next.js application for production
 RUN yarn production:build
 
