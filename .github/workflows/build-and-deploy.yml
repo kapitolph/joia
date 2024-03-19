@@ -75,10 +75,10 @@ jobs:
         uses: depot/build-push-action@v1
         with:
           project: ${{ vars.DEPOT_PROJECT_ID }}
-          build-args: >
-            DATABASE_URL=${{ env.DATABASE_URL }},
-            ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},
-            NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}
+          build-args: |
+            "DATABASE_URL=${{ env.DATABASE_URL }}"
+            "ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }}"
+            "NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}"
           context: ./
           platforms: >
             linux/amd64,
