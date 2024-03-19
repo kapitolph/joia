@@ -20,53 +20,43 @@ jobs:
       REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      SMTP_EMAIL_SERVER: ${{ secrets.SMTP_EMAIL_SERVER }}
+      SMTP_EMAIL_FROM: ${{ secrets.SMTP_EMAIL_FROM }}
+      INTERNAL_OPENAI_API_KEY: ${{ secrets.INTERNAL_OPENAI_API_KEY }}
       NEXT_PUBLIC_FRONTEND_URL: ${{ vars.NEXT_PUBLIC_FRONTEND_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.19
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable
-
-      - name: Build the app
-        run: yarn production:build
-
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ env.SERVICE_ACCOUNT_USERNAME }}
           password: ${{ env.REGISTRY_TOKEN }}
-
       - name: Set up Depot CLI
         uses: depot/setup-action@v1
-
+      - name: Generate short sha
+        uses: ./.github/actions/generate-short-sha
       - name: Run docker build
         uses: depot/build-push-action@v1
         with:
           project: ${{ vars.DEPOT_PROJECT_ID }}
-          build-args: "DATABASE_URL=${{ env.DATABASE_URL }},ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }},NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}"
+          build-args: |
+            DATABASE_URL=${{ env.DATABASE_URL }}
+            ENCRYPTION_KEY=${{ env.ENCRYPTION_KEY }}
+            NEXT_PUBLIC_FRONTEND_URL=${{ env.NEXT_PUBLIC_FRONTEND_URL }}
           context: ./
-          platforms: "linux/amd64,linux/arm64"
+          platforms: >
+            linux/amd64,
+            linux/arm64
           push: true
           file: ./Dockerfile.production
-          tags: ${{ env.REGISTRY }}/joia:${{ env.SHORT_SHA }}
+          tags: ${{ env.REGISTRY }}:${{ env.SHORT_SHA }}
+      - name: Deploy Joia
+        uses: ./.github/actions/devtron-container-deploy
+        with:
+          workflow_ids: "94" # Workflow ID for joia (94)
+          docker_image: ${{ env.REGISTRY }}:${{ env.SHORT_SHA }}
+          devtron_cli_token: ${{ secrets.JOIA_DEVTRON_TOKEN }}
