@@ -5,13 +5,13 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and yarn.lock to the working directory
-COPY package.json yarn.lock prisma ./
+# COPY package.json yarn.lock prisma ./
 
 # Install dependencies using Yarn
-RUN yarn install --frozen-lockfile --ignore-scripts
+# RUN yarn install --frozen-lockfile --ignore-scripts
 
 # Copy the rest of the application code to the working directory
-COPY . ./
+# COPY . ./
 
 # Set the environment variable for production
 ENV NODE_ENV=production
@@ -29,10 +29,10 @@ ENV DATABASE_URL=$DATABASE_URL
 ENV ENCRYPTION_KEY=$ENCRYPTION_KEY
 ENV NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL
 
-RUN echo $NEXT_PUBLIC_FRONTEND_URL
+RUN echo "NEXT_PUBLIC_FRONTEND_URL: $NEXT_PUBLIC_FRONTEND_URL"
 
 # Run Prisma migration and build the Next.js application for production
-RUN yarn production:build
+# RUN yarn production:build
 
 # Expose the port on which the application will run (default for Next.js is 3000)
 EXPOSE 3000
