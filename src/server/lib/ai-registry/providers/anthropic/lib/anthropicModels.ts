@@ -19,4 +19,13 @@ export const anthropicModels: AiRegistryModel[] = [
       response: 0.015,
     },
   },
+  {
+    slug: 'claude-3-haiku-20240307' as const,
+    publicName: 'Claude 3 Haiku' as const,
+    default: true,
+    costPerMille: {
+      request: 0.00025,
+      response: 0.00125,
+    },
+  },
 ]
