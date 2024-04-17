@@ -4,6 +4,14 @@ export const openAiModels: AiRegistryModel[] = [
   {
     slug: 'gpt-4-turbo-preview' as const,
     publicName: 'Chat GPT-4 Turbo' as const,
+    costPerMille: {
+      request: 0.01,
+      response: 0.03,
+    },
+  },
+  {
+    slug: 'gpt-4-turbo-2024-04-09' as const,
+    publicName: 'Chat GPT-4 Turbo (2024-04-09)' as const,
     default: true,
     costPerMille: {
       request: 0.01,
